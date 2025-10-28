@@ -14,6 +14,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                'autosocial-primary': '#1D4ED8', // Deep Blue
+                'autosocial-secondary': '#06B6D4', // Cyan (for AI/Automated)
+                'autosocial-bg': '#F8FAFC', // Very clear background
+                'autosocial-card': '#FFFFFF', // Card background
+            },
         },
     },
 
