@@ -51,12 +51,17 @@
                 {{-- Logout and User Infos --}}
                 <div class="border-t pt-4">
                     <div class="flex items-center mb-3">
-                        <!-- Avatar image in sidebar (Placeholder) -->
+                        <img src="{{ Auth::user()->avatar
+                            ? asset('storage/' . Auth::user()->avatar)
+                            : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user( )->name) . '&color=FFFFFF&background=1D4ED8' }}"
+                            alt="Avatar"
+                            class="w-10 h-10 rounded-full mr-3 object-cover">
                         <div>
                             <p class="font-semibold text-sm">{{ Auth::user()->name }}</p>
                             <p class="text-xs text-gray-500">{{ Auth::user()->role }}</p>
                         </div>
                     </div>
+
 
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
