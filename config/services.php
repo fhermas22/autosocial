@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'llm' => [
+        'key' => env('LLM_API_KEY'),
+        'url' => env('LLM_API_URL'),
+    ],
+
 ];
