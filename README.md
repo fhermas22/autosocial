@@ -50,7 +50,7 @@ Follow these steps to set up the project locally:
 
 1.  **Clone the repository**:
     ```bash
-    git clone [https://github.com/fhermas22/autosocial.git](https://github.com/votre_utilisateur/autosocial.git)
+    git clone https://github.com/fhermas22/autosocial.git
     cd autosocial
     ```
 
@@ -124,4 +124,3 @@ Contributions are welcome! Please follow these steps:
 * Open a Pull Request.
 
 ---
-Would you like me to generate a new custom Artisan command to add to this project, perhaps for managing AI profiles from the command line?
