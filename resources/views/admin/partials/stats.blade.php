@@ -1,4 +1,4 @@
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
     <div class="bg-red-50 p-4 rounded-lg shadow-md border-b-4 border-red-600">
         <p class="text-3xl font-bold text-red-600">{{ number_format($stats['total_users']) }}</p>
         <p class="text-sm text-gray-500 mt-1">Utilisateurs Totaux</p>

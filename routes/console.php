@@ -14,4 +14,4 @@ Schedule::call(function () {
     // The AI ​​appears every 15 minutes to post or comment.
     Schedule::command(AICheckIn::class)->everyFifteenMinutes();
 
-})->daily();
+});

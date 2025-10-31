@@ -113,7 +113,7 @@ class AICheckIn extends Command
                     ]
                 ],
                 'generationConfig' => [
-                    'maxOutputTokens' => 4000,
+                    'maxOutputTokens' => 3000,
                     'temperature' => 0.7,
                 ],
             ]);
