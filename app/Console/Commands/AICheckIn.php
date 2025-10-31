@@ -53,7 +53,7 @@ class AICheckIn extends Command
      */
     protected function generateAndPost(User $aiUser)
     {
-        $prompt = "Écris un post court et engageant pour un réseau social sur un sujet aléatoire (technologie, nature, programmation, cuisine ou gaming). Maximum 450 caractères. Réponds uniquement avec le contenu du post.";
+        $prompt = "Écris un post court et engageant pour un réseau social sur un sujet aléatoire (technologie, nature, programmation, sport, cuisine, gaming, ou IA). Maximum 450 caractères. Réponds uniquement avec le contenu du post.";
 
         $content = $this->callLlmApi($prompt);
 
@@ -97,31 +97,54 @@ class AICheckIn extends Command
      */
     protected function callLlmApi(string $prompt): ?string
     {
+        // Configuration and URL code
+        $apiKey = config('services.llm.key');
+        $modelName = 'gemini-2.5-flash';
+        $apiUrl = config('services.llm.url') . $modelName . ':generateContent?key=' . $apiKey;
+
         try {
-            $response = Http::withHeaders([
-                'Authorization' => 'Bearer ' . config('services.llm.key'),
-                'Content-Type' => 'application/json',
-            ])->post(config('services.llm.url'), [
-                'model' => 'gpt-4.1-mini', // Model to use (to adapt)
-                'messages' => [
-                    ['role' => 'user', 'content' => $prompt]
+            $response = Http::post($apiUrl, [
+                'contents' => [
+                    [
+                        'role' => 'user',
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
+                    ]
                 ],
-                'max_tokens' => 200,
-                'temperature' => 0.7, // For more creative content
+                'generationConfig' => [
+                    'maxOutputTokens' => 4000,
+                    'temperature' => 0.7,
+                ],
             ]);
 
-            // Check if the request was succesful and if it contains a response
-            if ($response->successful() && isset($response->json()['choices'][0]['message']['content'])) {
-                $text = trim($response->json()['choices'][0]['message']['content']);
-                // Cleanup to ensure only generated text is returned
-                return Str::of($text)->trim(' "')->toString();
+            $responseData = $response->json();
+
+            // Using data_get() to safely check for the existence of the text
+            $generatedText = data_get($responseData, 'candidates.0.content.parts.0.text');
+
+            // 1. Check if the HTTP request was successful
+            if ($response->successful()) {
+
+                // 2. Check if the generated text exists (even if it is truncated by MAX_TOKENS)
+                if (!empty($generatedText)) {
+                    $text = trim($generatedText);
+                    return Str::of($text)->trim(' "')->toString();
+                }
+
+                // 3. Handle cases where the text is empty (MAX_TOKENS, SAFETY, or other)
+                $finishReason = data_get($responseData, 'candidates.0.finishReason', 'INCONNU');
+                $this->error("L'appel API Gemini a réussi (HTTP 200), mais aucun texte n'a été généré. Raison : {$finishReason}.");
+                return null;
             }
 
-            $this->error('Erreur lors de l\'appel API : ' . $response->body());
+            // Handling API errors (HTTP codes 4xx, 5xx)
+            $errorMessage = data_get($responseData, 'error.message', $response->body());
+            $this->error('Erreur lors de l\'appel API Gemini : ' . $errorMessage);
             return null;
 
         } catch (\Exception $e) {
-            $this->error('Exception lors de l\'appel API : ' . $e->getMessage());
+            $this->error('Exception lors de l\'appel API Gemini : ' . $e->getMessage());
             return null;
         }
     }
