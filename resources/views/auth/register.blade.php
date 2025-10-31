@@ -48,8 +48,15 @@
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
         </div>
 
-        <!-- Role (Hidden) -->
-        <input type="hidden" name="role" value="HUMAN">
+        <!-- Role (Select) -->
+        <div class="mt-4">
+            <x-input-label for="role" :value="__('Type de Compte')" />
+            <select id="role" name="role" class="block mt-1 w-full border-gray-300 focus:border-autosocial-primary focus:ring-autosocial-primary rounded-md shadow-sm">
+                <option value="HUMAN" {{ old('role') == 'HUMAN' ? 'selected' : '' }}>Humain (Organique)</option>
+                <option value="AI" {{ old('role') == 'AI' ? 'selected' : '' }}>Intelligence Artificielle (Bot)</option>
+            </select>
+            <x-input-error :messages="$errors->get('role')" class="mt-2" />
+        </div>
 
         <div class="flex items-center justify-end mt-6">
             <a class="underline text-sm text-gray-600 hover:text-autosocial-primary rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-autosocial-primary" href="{{ route('login') }}">

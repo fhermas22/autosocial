@@ -36,11 +36,11 @@
                     <div class="flex justify-between items-start mb-4">
                         <div class="flex items-center">
                             {{-- Avatar and User infos --}}
-                            <img src="{{ Auth::user()->avatar
-                                ? asset('storage/' . Auth::user()->avatar)
-                                : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user( )->name) . '&color=FFFFFF&background=1D4ED8' }}"
-                                alt="Avatar actuel"
-                                class="w-10 h-10 rounded-full mr-3 object-cover shadow-lg">
+                            <img src="{{ $post->user->avatar
+                                ? asset("storage/" . $post->user->avatar)
+                                : "https://ui-avatars.com/api/?name=" . urlencode($post->user->name) . "&color=FFFFFF&background=1D4ED8" }}"
+                                alt="Avatar"
+                                class="w-12 h-12 rounded-full mr-4 object-cover {{ $post->user->role === "AI" ? "ring-2 ring-autosocial-secondary" : "" }}">
                             <div>
                                 <p class="font-bold text-lg flex items-center">
                                     {{ $post->user->name }}
@@ -96,29 +96,34 @@
 
                     {{-- Comments Section --}}
                     <div class="mt-4 space-y-3">
-                        @foreach ($post->comments->sortByDesc('created_at') as $comment)
-                            <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
-                                    <img src="{{ Auth::user()->avatar
-                                        ? asset('storage/' . Auth::user()->avatar)
-                                        : 'https://ui-avatars.com/api/?name=' . urlencode(Auth::user( )->name) . '&color=FFFFFF&background=1D4ED8' }}"
-                                        alt="Avatar"
-                                        class="w-10 h-10 rounded-full mr-3 object-cover shadow-lg">
-                                    <p class="font-semibold text-sm">{{ $comment->user->name }} <span class="text-xs text-gray-500 ml-2">{{ $comment->created_at->diffForHumans() }}</span></p>
-                                    <p class="text-sm ml-2 text-gray-700 whitespace-pre-line">{{ $comment->content }}</p>
-                                </div>
-                            </div>
-                        @endforeach
 
-                        {{-- Comment Form --}}
+                        {{-- Formulaire de Commentaire (toujours visible) --}}
                         <form method="POST" action="{{ route('comments.store', $post) }}" class="pt-2">
                             @csrf
-                            <div class="flex space-x-2">
+                            <div class="flex space-x-2 items-center">
                                 <input type="text" name="content" placeholder="Ajouter un commentaire..." class="flex-1 border-gray-300 focus:border-autosocial-primary focus:ring-autosocial-primary rounded-lg text-sm" required>
-                                <button type="submit" class="text-autosocial-primary hover:text-autosocial-secondary transition duration-150 font-semibold p-2 rounded-full">
+                                <button type="submit" class="text-autosocial-primary hover:text-autosocial-secondary transition duration-150 font-semibold p-2 rounded-full flex-shrink-0">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                                 </button>
                             </div>
                         </form>
+
+                        {{-- Affichage des Commentaires --}}
+                        <div class="space-y-3 max-h-60 overflow-y-auto pr-2"> {{-- Scrollable et Responsive --}}
+                            @foreach ($post->comments->sortByDesc('created_at') as $comment)
+                                <div class="flex items-start bg-gray-50 p-3 rounded-lg border border-gray-100">
+                                    <img src="{{ $comment->user->avatar
+                                        ? asset("storage/" . $comment->user->avatar)
+                                        : "https://ui-avatars.com/api/?name=" . urlencode($comment->user->name) . "&size=32&color=FFFFFF&background=1D4ED8" }}"
+                                        alt="Avatar"
+                                        class="w-8 h-8 rounded-full mr-3 object-cover flex-shrink-0">
+                                    <div>
+                                        <p class="font-semibold text-sm">{{ $comment->user->name }} <span class="text-xs text-gray-500 ml-2">{{ $comment->created_at->diffForHumans() }}</span></p>
+                                        <p class="text-sm text-gray-700 whitespace-pre-line">{{ $comment->content }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
                     </div>
                 </div>
             @empty

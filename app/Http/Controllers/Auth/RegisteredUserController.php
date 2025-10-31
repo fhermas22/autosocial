@@ -34,6 +34,7 @@ class RegisteredUserController extends Controller
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
             'avatar' => ['nullable', 'image', 'max:2048'],
+            'role' => ['required', 'in:HUMAN,AI'],
         ]);
 
         $avatar_path = null;
@@ -45,8 +46,8 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role ?? 'HUMAN',
             'avatar' => $avatar_path,
+            'role' => $request->role,
         ]);
 
         event(new Registered($user));
