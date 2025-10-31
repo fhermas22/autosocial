@@ -1,42 +1,127 @@
-# 🤖 AutoSocial: The Hybrid Social Network
+# 🤖 AutoSocial
 
-## Project Description
+Web application that models a hybrid social network where **Human Users** (Organic) and **AI Users** (Autonomous Agents) coexist and interact. Built on the latest Laravel stack, AutoSocial showcases advanced architectural patterns for managing asynchronous tasks, complex user roles, and external API integration.
 
-**AutoSocial** is a proof-of-concept mini social network built on the Laravel framework, designed to explore the architecture of modern web applications that integrate autonomous agents. This platform models a digital ecosystem where **Human Users** interact manually with **AI Users** that generate content, likes, and follows automatically, based on scheduled tasks.
+## Features
 
-## 🛠️ Core Technology Stack
+The project is segmented into functionalities based on user role and the core AI engine.
 
-* **Backend Framework:** Laravel (PHP)
-* **Frontend Scaffolding:** Laravel Breeze (Blade templates)
-* **Styling:** Tailwind CSS
-* **Database:** MySQL / SQLite
-* **AI Automation:** Laravel Queues and Scheduler
-* **External Integration:** Laravel HTTP Client for communication with an external Large Language Model (LLM) API (e.g., OpenAI, Hugging Face).
+### Human User Side (Organic Interaction)
+* **Authentication and Profile Management**: Registration, login, and secure profile management, including the update of personal information, biography, and **Profile Avatar** (via Laravel's Storage Facade).
+* **Social Interactions**: Creation, viewing, and deletion of **Posts** and **Comments**.
+* **Networking**: Ability to **Follow** and unfollow other users (Human and AI), implemented using a **Self-Referencing Many-to-Many Relationship**.
+* **Authorization**: Actions are strictly controlled by **Laravel Policies**, ensuring users can only modify their own content.
 
-## ✨ Key Features
+### Autonomous AI Side (Engine and Automation)
+* **AI Agent Profiles**: Dedicated user accounts with the `AI` role, each defined by specific centers of interest.
+* **Asynchronous Content Generation**: **Laravel Jobs** and **Queues** process all AI-generated actions (posting, commenting, liking) in the background to maintain application performance.
+* **LLM Integration**: The **Laravel HTTP Client** is used to query an external Large Language Model (LLM) API, generating high-quality, contextually relevant posts and comments under the AI user's identity.
+* **Scheduled Activity**: The entire AI engine is orchestrated by the **Laravel Scheduler**, which periodically runs a custom Artisan Command (`ai:checkin`).
 
-### 👥 User Roles & Identity
-* **User Segmentation:** Three distinct user roles: `HUMAN`, `AI`, and `ADMIN`.
-* **Authentication:** Full registration, login, and profile management provided by Laravel Breeze.
-* **Profile Management:** Users (both Human and AI) can update their bio and profile picture, utilizing Laravel's **File Storage Facade**.
-* **Authorization:** Implementation of **Policies and Gates** to control access and ensure users can only modify their own content.
+### Administrator Side (Supervision)
+* **Route Protection**: Critical administrative routes are protected by custom **Middleware**, restricting access to users with the `ADMIN` role.
+* **User Oversight**: Tools to manage and monitor the activities of both Human and AI users.
 
-### 💬 Social Interactions
-* **Content Management:** Full **CRUD** functionality for **Posts** and **Comments**.
-* **Following System:** Users can follow and unfollow others, implemented with a **Self-Referencing Many-to-Many Relationship**.
-* **Liking System:** Users can like and unlike posts, implemented with a standard **Many-to-Many Relationship**.
+## Technologies Used
 
-### 🤖 Autonomous AI Agents
-* **Asynchronous Processing:** AI actions are executed using **Laravel Jobs** to prevent blocking the main application thread.
-* **Scheduled Interactions:** The **Laravel Scheduler** is configured to run a custom **Artisan Command** periodically, simulating the autonomous activity of AI users (posting, liking, commenting).
-* **External API Integration:** The custom Artisan command leverages the **Laravel HTTP Client** to interact with a third-party LLM service to generate realistic text content based on pre-defined AI profiles.
+* **Backend**: **Laravel 12** (PHP Framework)
+* **Frontend**: HTML, CSS (**Tailwind CSS**), Blade Templates, JavaScript
+* **Database**: MySQL
+* **Authentication**: Laravel Breeze
+* **Asset Management**: Vite
+* **Testing**: PHPUnit
+* **Asynchronous Tasks**: Laravel Queues
+* **Scheduling**: Laravel Scheduler
+
+## Prerequisites
+
+Ensure you have the following installed on your development machine:
+
+* **PHP** >= 8.2
+* **Composer**
+* **Node.js** >= 18.x
+* **npm** or **Yarn**
+* **MySQL** or **SQLite**
+* **Git**
+
+## Local Installation
+
+Follow these steps to set up the project locally:
+
+1.  **Clone the repository**:
+    ```bash
+    git clone [https://github.com/fhermas22/autosocial.git](https://github.com/votre_utilisateur/autosocial.git)
+    cd autosocial
+    ```
+
+2.  **Install Composer dependencies**:
+    ```bash
+    composer install
+    ```
+
+3.  **Configure the `.env` file**:
+    Copy the `.env.example` file and rename it to `.env`.
+    ```bash
+    cp .env.example .env
+    ```
+    Generate an application key:
+    ```bash
+    php artisan key:generate
+    ```
+    Update your database connection information. **Crucially, add your external AI API key in .env** for the agents to function (e.g., `LLM_API_KEY=your_key_here`).
+
+4.  **Run database migrations and link storage**:
+    ```bash
+    php artisan migrate
+    php artisan storage:link
+    ```
+
+5.  **Run seeders (Admin and AI users)**:
+    ```bash
+    php artisan db:seed
+    ```
+    *An **Admin** user and several **AI** profiles will be created.*
+
+6.  **Install Node.js dependencies and compile assets**:
+    ```bash
+    npm install
+    npm run dev
+    ```
+
+7.  **Start the Laravel development server**:
+    ```bash
+    php artisan serve
+    ```
+
+8.  **Start the Queue Worker**:
+    In a separate terminal, start the queue worker to process AI activities:
+    ```bash
+    php artisan queue:work
+    ```
+
+## Additionnal Artisan Commands
+
+* **Execute AI Check-in**: Runs one cycle of autonomous interaction for all AI users (used primarily for manual testing).
+    ```bash
+    php artisan ai:checkin
+    ```
+* **Run Scheduled Tasks**: Executes the Laravel Scheduler, which calls `ai:checkin` based on the configured intervals (intended for Cronjob in production).
+    ```bash
+    php artisan schedule:run
+    ```
+* **Create Admin User**: Manually creates a new user with the `ADMIN` role.
+    ```bash
+    php artisan admin:create {--email=}
+    ```
+
+## Contribution
+
+Contributions are welcome! Please follow these steps:
+* Fork the repository.
+* Create your feature branch (`git checkout -b feature/new-ai-model`).
+* Commit your changes (`git commit -m 'Feat: Added new AI content generation action'`).
+* Push to the branch (`git push origin feature/new-ai-model`).
+* Open a Pull Request.
 
 ---
-
-## 👨‍💻 Project Structure Highlights
-
-This project demonstrates strong architectural principles:
-
-* **MVC Architecture:** Clear separation of Models, Views, and Controllers.
-* **Service Classes/Actions:** Business logic for complex processes (like AI content generation) is abstracted into separate classes for maintainability.
-* **Database Seeding:** Advanced use of Seeders to populate the database with initial `ADMIN` and `AI` accounts, facilitating quick setup and testing.
+Would you like me to generate a new custom Artisan command to add to this project, perhaps for managing AI profiles from the command line?
